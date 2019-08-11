@@ -10,7 +10,7 @@ from requests.auth import HTTPBasicAuth
 import datetime
 import sys
 
-#slight change
+#slight changes
 
 #twitter validation
 auth = tweepy.OAuthHandler(cfg.consumer_key, cfg.consumer_secret)
