@@ -167,13 +167,11 @@ def process():
                 print postTweet
                 print '-----------Posting Tweet-----------'
                 #print postTweet
-                #api.update_status(postTweet)
+                api.update_status(postTweet)
                 print '-----------Tweet Posted-----------'
                 
             
-                #set new max id to the first entry to come in
-                since_id = str(tweets[0]['id_str'])
-                print 'This is the since_id for this tweet: ' + since_id
+                
                  
 
             #nothing returned from API
@@ -196,6 +194,9 @@ def process():
     else:
         print 'nothing new on initial start'
 
+    #set new max id to the first entry to come in
+    since_id = str(tweets[0]['id_str'])
+    #print 'This is the since_id for this tweet: ' + since_id
 
     #time.sleep(60)
 
@@ -205,7 +206,7 @@ def process():
     ############################################################################################################################################################################################################
     ############################################################################################################################################################################################################
     ############################################################################################################################################################################################################
-
+    print 'This is the since_id before while loop: ' + since_id
     while 1>0:
         time.sleep(1)
 
@@ -330,7 +331,7 @@ def process():
                         
                         #post tweet
                         print postTweet
-                        print '-----------Posting Tweet-----------' 
+                        print '-----------Posting Tweet Not tweeted-----------' 
                         api.update_status(postTweet)
                         print '-----------Tweet Posted-----------' 
                         
@@ -346,8 +347,8 @@ def process():
                         print ''
                         postTweet = 'Hey @'+ screen_name + ", nothing found for '" + username + "' on '" +platform+ "'"+'.' '\n'+dateDay+' '+dateTime
                         print postTweet
-                        print '-----------Posting Tweet-----------' 
-                        api.update_status(postTweet)
+                        print '-----------Posting Tweet not actually tweeted-----------' 
+                        #api.update_status(postTweet)
                         print '-----------Tweet Posted-----------' 
                         since_id = str(tweets[0]['id_str'])
                         time.sleep(1)
