@@ -44,7 +44,7 @@ def process():
     print ' '
         
     #twitter API    
-    twitter_endpoint = 'https://api.twitter.com/1.1/statuses/mentions_timeline.json?screen_name=ApexLegendsBot&since_id=' + '1159970903654043648'
+    twitter_endpoint = 'https://api.twitter.com/1.1/statuses/mentions_timeline.json?screen_name=ApexLegendsBot'
 
     twitter_response, twitter_data = client.request(twitter_endpoint)
 
@@ -94,7 +94,7 @@ def process():
 
         #handle undesrcore
         additionalText = text.split(':')
-        underscoreRight = additionalText[1].split('_')
+        #underscoreRight = additionalText[1].split('_')
         print 'This is the info to be passed to the API: '+str(splitTweet)
         print ''
 
@@ -117,7 +117,7 @@ def process():
 
             #assign platform
             platform = str(splitTweet[0])
-            username = str(splitTweet[0])
+            username = str(splitTweet[1])
 
             headers = {
                 'TRN-Api-Key': cfg.APEX_KEY
@@ -169,10 +169,6 @@ def process():
                 #print postTweet
                 api.update_status(postTweet)
                 print '-----------Tweet Posted-----------'
-                
-            
-                
-                 
 
             #nothing returned from API
             elif statusCode == 400:
@@ -262,7 +258,7 @@ def process():
 
                 #handle undesrcore
                 additionalText = text.split(':')
-                underscoreRight = additionalText[1].split('_')
+                #underscoreRight = additionalText[1].split('_')
                 print 'This is the info to be passed to the API: '+str(splitTweet)
                 print ''
 
@@ -331,7 +327,7 @@ def process():
                         
                         #post tweet
                         print postTweet
-                        print '-----------Posting Tweet Not tweeted-----------' 
+                        print '-----------Posting Tweet tweeted-----------' 
                         api.update_status(postTweet)
                         print '-----------Tweet Posted-----------' 
                         
@@ -348,8 +344,8 @@ def process():
                         postTweet = 'Hey @'+ screen_name + ", nothing found for '" + username + "' on '" +platform+ "'"+'.' '\n'+dateDay+' '+dateTime
                         print postTweet
                         print '-----------Posting Tweet not actually tweeted-----------' 
-                        #api.update_status(postTweet)
-                        print '-----------Tweet Posted-----------' 
+                        
+                        print '-----------Tweet Posted not actually tweeted-----------' 
                         since_id = str(tweets[0]['id_str'])
                         time.sleep(1)
                         
