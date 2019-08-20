@@ -18,7 +18,7 @@ auth.set_access_token(cfg.access_token, cfg.access_token_secret)
 
 api = tweepy.API(auth)
 
-#apex validationddd
+#apex validationd
 headers = {
         'TRN-Api-Key': '3c0a15fd-ac7c-4f37-9f7a-47bd7a76286d',
     }
@@ -29,7 +29,34 @@ access_token = oauth.Token(key=cfg.access_token, secret=cfg.access_token_secret)
 client = oauth.Client(consumer, access_token)
 
 #define the initial entrance point 
-since_id = '1160594273093529600'
+since_id = '1161980026813911046'
+
+#function to update since_ids
+def updateSinceIDs(tweetID):
+    #write last since_id to the file
+    f = open("since_ids.txt", "a")
+    f.write(str(tweetID) + "\n") 
+    f.close()
+
+    #open and read the file after the appending:
+    # f = open("since_ids.txt", "r")
+    # print(f.read())
+    return 1
+
+#function to retrieve last since_id
+def retrieveLastID():
+    # read a text file as a list of lines
+    #update since_id to the last line on initial call
+    fileHandle = open ( 'since_ids.txt',"r" )
+    lineList = fileHandle.readlines()
+    fileHandle.close()
+    print lineList
+    print "The last line is:"
+    #print lineList[len(lineList)-1]
+    # or simply
+    lastID = lineList[-1]
+    print lastID
+    return lastID
 
 ######################################################################################################
 ######################################################################################################
@@ -42,9 +69,10 @@ def process():
 
     print '-----------Initial Start-----------'
     print ' '
-        
+
+    last_id = retrieveLastID()    
     #twitter API    
-    twitter_endpoint = 'https://api.twitter.com/1.1/statuses/mentions_timeline.json?screen_name=ApexLegendsBot'
+    twitter_endpoint = 'https://api.twitter.com/1.1/statuses/mentions_timeline.json?screen_name=ApexLegendsBot&since_id='+last_id
 
     twitter_response, twitter_data = client.request(twitter_endpoint)
 
@@ -119,16 +147,11 @@ def process():
             platform = str(splitTweet[0])
             username = str(splitTweet[1])
 
-            headers = {
-                'TRN-Api-Key': cfg.APEX_KEY
-            }
 
             print 'Username: ' + username
             print ''
 
-            
             #try and hit API
-            
             r = requests.get('https://public-api.tracker.gg/v1/apex/standard/profile/' + platform + '/' + username,headers=headers)
             stats = r.json()
             stats_array = {}
@@ -167,7 +190,7 @@ def process():
                 print postTweet
                 print '-----------Posting Tweet-----------'
                 #print postTweet
-                api.update_status(postTweet)
+                #api.update_status(postTweet)
                 print '-----------Tweet Posted-----------'
 
             #nothing returned from API
@@ -191,7 +214,16 @@ def process():
         print 'nothing new on initial start'
 
     #set new max id to the first entry to come in
-    since_id = str(tweets[0]['id_str'])
+    # if tweets[0]['id_str']:
+    if tweets:
+        print 'hi'
+        print tweets
+        print 'bye'
+        since_id = str(tweets[0]['id_str'])
+        updateSinceIDs(since_id)
+    else:
+        since_id = last_id
+   
     #print 'This is the since_id for this tweet: ' + since_id
 
     #time.sleep(60)
@@ -247,11 +279,9 @@ def process():
                 # Use an ID so that not every tweet is the "same"
                 print ''
                 print '-----------Get APEX Stats-----------'
-                
-                print '-----------Get APEX Stats-----------'
         
-        #loop through each mention and reply
-        #print tweets
+                #loop through each mention and reply
+                #print tweets
                 incomingTweet = text.split(' ')
                 transformTweet = str(incomingTweet[1])
                 splitTweet = transformTweet.split(':')
@@ -284,11 +314,11 @@ def process():
                     username = str(splitTweet[1])
 
                     print 'Username: ' + username
+                    print 'Platform: ' + platform
                     print ''
 
                     
                     #try and hit API
-                    
                     r = requests.get('https://public-api.tracker.gg/v1/apex/standard/profile/' + platform + '/' + username,headers=headers)
                     stats = r.json()
                     stats_array = {}
@@ -328,13 +358,14 @@ def process():
                         #post tweet
                         print postTweet
                         print '-----------Posting Tweet tweeted-----------' 
-                        api.update_status(postTweet)
+                        #api.update_status(postTweet)
                         print '-----------Tweet Posted-----------' 
                         
                     
                         #set new max id to the first entry to come in
                         since_id = str(tweets[0]['id_str'])
                         print 'This is the since_id for this tweet: ' + since_id 
+                        updateSinceIDs(since_id)
 
                     #nothing returned from API
                     elif statusCode == 400:
@@ -347,12 +378,14 @@ def process():
                         
                         print '-----------Tweet Posted not actually tweeted-----------' 
                         since_id = str(tweets[0]['id_str'])
+                        updateSinceIDs(since_id)
                         time.sleep(1)
                         
                         
                     else: 
                         print 'The APEX API could not be accessed for some reason.'
                         since_id = str(tweets[0]['id_str'])
+                        updateSinceIDs(since_id)
                         time.sleep(1)
                 else: 
                     print 'Bad info.'
