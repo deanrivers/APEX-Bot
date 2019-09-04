@@ -51,7 +51,7 @@ def retrieveLastID():
     lineList = fileHandle.readlines()
     fileHandle.close()
     print lineList
-    print "The last line is:"
+    print "The last line value in the since_ids.txt is: "
     #print lineList[len(lineList)-1]
     # or simply
     lastID = lineList[-1]
@@ -93,13 +93,18 @@ def process():
     #array to hold mentions info
     info = {}
 
-    for tweet in tweets:
+    for idx, tweet in enumerate(tweets):
         time.sleep(1)
 
-        #declare date and time for all possible tweets to use
+        #update since_id and append to text file for every tweet    
+        since_id = str(tweets[idx]['id_str'])    
+        
+
+         #declare date and time for all possible tweets to use
         x = datetime.datetime.now()
         dateDay = x.strftime("%x")
         dateTime = x.strftime("%X")
+
 
         text = tweet['text']
         screen_name = tweet['user']['screen_name']
@@ -113,17 +118,50 @@ def process():
         # Use an ID so that not every tweet is the "same"
         print ''
         print '-----------Get APEX Stats-----------'
+
+
+        #initial tweet
+
+        #split by spaces
+        incomingTweet = text.split(' ')
+        print(incomingTweet)
+
+        #split further by colon
+        newSplit = incomingTweet[1].split(":")
+        print newSplit
+
+        #apply platfrom and username
+
+        if len(incomingTweet) >2:
+            platform = newSplit[0]
+            username = newSplit[1] + '%20'+  incomingTweet[2]
+
+        elif len(incomingTweet) >=2 and len(newSplit) >= 2:
+            platform = newSplit[0]
+            username = newSplit[1]
+        
+        else:
+            platform = 'xbl'
+            username = 'Invalid Username'
+
+        
+            
+        print (platform)
+        print (username)
         
         #loop through each mention and reply
         #print tweets
-        incomingTweet = text.split(' ')
-        transformTweet = str(incomingTweet[1])
-        splitTweet = transformTweet.split(':')
+        # incomingTweet = text.split(' ')
+        # transformTweet = str(incomingTweet[1])
+        # splitTweet = transformTweet.split(':')
 
         #handle undesrcore
-        additionalText = text.split(':')
+        #additionalText = text.split(':')
         #underscoreRight = additionalText[1].split('_')
-        print 'This is the info to be passed to the API: '+str(splitTweet)
+        print 'This is the info to be passed to the API: '
+        print 'Platform: ' + platform
+        print 'Username: ' + username
+        print 'Length of incoming tweet: ' + str(len(incomingTweet))
         print ''
 
         #determing whether the platform is one of the three options
@@ -133,23 +171,25 @@ def process():
         enter = False
 
         #transform to True if a valid platofrm is passed
-        if str(splitTweet[0]) == 'xbl':
+        if str(newSplit[0]) == 'xbl':
             enter = True
-        if str(splitTweet[0]) == 'psn':
+        if str(newSplit[0]) == 'psn':
             enter = True
-        if str(splitTweet[0]) == 'origin':
+        if str(newSplit[0]) == 'origin':
             enter = True
                 
+        print newSplit
+        print enter        
         #asign the platform and username
-        if len(splitTweet) == 2 and enter:
+        if len(newSplit) >= 2 and enter:
 
             #assign platform
-            platform = str(splitTweet[0])
-            username = str(splitTweet[1])
+            # platform = str(incomingTweet[0])
+            # username = str(incomingTweet[1])
 
 
-            print 'Username: ' + username
-            print ''
+            # print 'Username: ' + username
+            # print ''
 
             #try and hit API
             r = requests.get('https://public-api.tracker.gg/v1/apex/standard/profile/' + platform + '/' + username,headers=headers)
@@ -192,6 +232,9 @@ def process():
                 #print postTweet
                 #api.update_status(postTweet)
                 print '-----------Tweet Posted-----------'
+                since_id = str(tweets[idx]['id_str'])
+                
+                
 
             #nothing returned from API
             elif statusCode == 400:
@@ -200,33 +243,29 @@ def process():
                 print ''
                 postTweet = 'Hey @'+ screen_name + ", nothing found for '" + username + "' on '" +platform+ "'"+'.' '\n'+dateDay+' '+dateTime
                 print postTweet
+                since_id = str(tweets[idx]['id_str'])
                 
                 
+                time.sleep(1)
                 
             else: 
                 print 'The APEX API could not be accessed for some reason.'
+                since_id = str(tweets[idx]['id_str'])
+                
         else: 
             print 'Bad info.'
-            # postTweet = 'Hey @'+ screen_name + ', the information you provided was blasphemous. Please follow the guidelines when using this bot. I was created by a human!'+'\n'+dateDay+' '+dateTime
-            # print postTweet
+            since_id = str(tweets[idx]['id_str'])
             
-    else:
+            
+            # postTweet = 'Hey @'+ screen_name + ', the information you provided was blasphemous. Please follow the guidelines when using this bot. I was created by a human!'+'\n'+dateDay+' '+dateTime
+            
+        updateSinceIDs(since_id)    
+            
+    if len(tweets) == 0:
         print 'nothing new on initial start'
-
-    #set new max id to the first entry to come in
-    # if tweets[0]['id_str']:
-    if tweets:
-        print 'hi'
-        print tweets
-        print 'bye'
-        since_id = str(tweets[0]['id_str'])
-        updateSinceIDs(since_id)
-    else:
         since_id = last_id
-   
-    #print 'This is the since_id for this tweet: ' + since_id
-
-    #time.sleep(60)
+    else:
+        print 'This is the since_id before while loop: ' + since_id    
 
     #enter While loop section
     ############################################################################################################################################################################################################
@@ -234,7 +273,11 @@ def process():
     ############################################################################################################################################################################################################
     ############################################################################################################################################################################################################
     ############################################################################################################################################################################################################
-    print 'This is the since_id before while loop: ' + since_id
+    
+
+
+
+
     while 1>0:
         time.sleep(1)
 
@@ -280,16 +323,40 @@ def process():
                 print ''
                 print '-----------Get APEX Stats-----------'
         
-                #loop through each mention and reply
-                #print tweets
+                #initial tweet
+
+                #split by spaces
                 incomingTweet = text.split(' ')
-                transformTweet = str(incomingTweet[1])
-                splitTweet = transformTweet.split(':')
+                print(incomingTweet)
+
+                #split further by colon
+                newSplit = incomingTweet[1].split(":")
+                print newSplit
+
+                #apply platfrom and username
+
+                if len(incomingTweet) >2:
+                    platform = newSplit[0]
+                    username = newSplit[1] + '%20'+  incomingTweet[2]
+
+                elif len(incomingTweet) >=2 and len(newSplit) >= 2:
+                    platform = newSplit[0]
+                    username = newSplit[1]
+                
+                else:
+                    platform = 'xbl'
+                    username = 'Invalid Username'
+                    
+                print (platform)
+                print (username)
 
                 #handle undesrcore
-                additionalText = text.split(':')
+                #additionalText = text.split(':')
                 #underscoreRight = additionalText[1].split('_')
-                print 'This is the info to be passed to the API: '+str(splitTweet)
+                print 'This is the info to be passed to the API: '
+                print 'Platform: ' + platform
+                print 'Username: ' + username
+                print 'Length of incoming tweet: ' + str(len(incomingTweet))
                 print ''
 
                 #determing whether the platform is one of the three options
@@ -299,19 +366,19 @@ def process():
                 enter = False
 
                 #transform to True if a valid platofrm is passed
-                if str(splitTweet[0]) == 'xbl':
+                if str(newSplit[0]) == 'xbl':
                     enter = True
-                if str(splitTweet[0]) == 'psn':
+                if str(newSplit[0]) == 'psn':
                     enter = True
-                if str(splitTweet[0]) == 'origin':
+                if str(newSplit[0]) == 'origin':
                     enter = True
                         
                 #asign the platform and username
-                if len(splitTweet) == 2 and enter:
+                if len(newSplit) >= 2 and enter:
 
                     #assign platform
-                    platform = str(splitTweet[0])
-                    username = str(splitTweet[1])
+                    # platform = str(splitTweet[0])
+                    # username = str(splitTweet[1])
 
                     print 'Username: ' + username
                     print 'Platform: ' + platform
@@ -365,7 +432,7 @@ def process():
                         #set new max id to the first entry to come in
                         since_id = str(tweets[0]['id_str'])
                         print 'This is the since_id for this tweet: ' + since_id 
-                        updateSinceIDs(since_id)
+                        
 
                     #nothing returned from API
                     elif statusCode == 400:
@@ -378,30 +445,29 @@ def process():
                         
                         print '-----------Tweet Posted not actually tweeted-----------' 
                         since_id = str(tweets[0]['id_str'])
-                        updateSinceIDs(since_id)
+                        
                         time.sleep(1)
                         
                         
                     else: 
                         print 'The APEX API could not be accessed for some reason.'
                         since_id = str(tweets[0]['id_str'])
-                        updateSinceIDs(since_id)
+                        
                         time.sleep(1)
                 else: 
                     print 'Bad info.'
                     #postTweet = 'Hey @'+ screen_name + ', the information you provided was blasphemous. Please follow the guidelines when using this bot. I was created by a human!'+'\n'+dateDay+' '+dateTime
                     #print postTweet
+                    since_id = str(tweets[0]['id_str'])
+                    
 
                 time.sleep(1)
-
-                    
+            
+            updateSinceIDs(since_id)
 
         elif len(tweets) == 0:
             
             print 'There is nothing new. The bot will re-loop in 60 seconds'
-
-
-
             time.sleep(60)
 
             
