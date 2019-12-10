@@ -9,6 +9,7 @@ import urllib2
 from requests.auth import HTTPBasicAuth
 import datetime
 import sys
+import mailer
 
 #setup
 #twitter validation
@@ -60,10 +61,12 @@ def newProcess():
         tweets = json.loads(twitter_data)    
         print tweets
 
-    except: 
+    except Exception as e: 
         print ''
         print 'Something went wrong when hitting the Twitter API'
+        print e
         print ''
+        return False
 
     #use API info
     for ID in tweets:
@@ -155,8 +158,10 @@ def newProcess():
                 statusCode = r.status_code   
                 #print stats
             
-            except:
+            except Exception as e:
                 print 'Something went wrong when hitting the Apex API.'
+                print e
+                return False
 
             #ensure the API was hit
             print 'Status code: '+str(statusCode)
@@ -205,10 +210,14 @@ def newProcess():
             else: 
                 print 'The APEX API could not be accessed for some reason.'
         else: 
-            print 'No status code logic triggered for'      
+            print 'No status code logic triggered'      
     if len(tweets) == 0:
         print 'Nothing new on initial start'
         since_id = last_id
     else:
         print 'This is the last_id before the while loop: ' + last_id 
         updateSinceIDs(str(tweets[0]['id_str']))
+
+    return True
+
+

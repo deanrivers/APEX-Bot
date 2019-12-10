@@ -1,24 +1,17 @@
-import json
-import oauth2 as oauth
-import tweepy
-import cfg
-import threading
 import time
-import requests
-import urllib2
-from requests.auth import HTTPBasicAuth
-import datetime
 import sys
 import process
+import mailer
 
-#initial process
-process.newProcess()
-
-print 'Starting Loop in 60s'
 #ongoing process
 while(1>0):
-    time.sleep(60)
-    process.newProcess()
-    print 'Restarting Loop in 60s'
-    print ''
     
+    response = process.newProcess()
+    print 'Send error email?: '+str(not response)
+    
+    #if the process came back with an error... send email
+    if response==False:
+        mailer.sendEmail()
+    print ('Restarting Loop in 60s')    
+    print ('')
+    time.sleep(60)
