@@ -112,12 +112,12 @@ def newProcess():
         #apply platfrom and username
 
         if len(incomingTweet) >2 and len(newSplit) >= 2:
-            platform = newSplit[0]
+            platform = str(newSplit[0]).lower()
             print incomingTweet
             username = newSplit[1] + '%20'+  incomingTweet[2]
 
         elif len(incomingTweet) >=2 and len(newSplit) >= 2:
-            platform = newSplit[0]
+            platform = str(newSplit[0]).lower()
             username = newSplit[1]
         
         else:
@@ -137,11 +137,11 @@ def newProcess():
         enter = False
 
         #transform to True if a valid platofrm is passed
-        if str(newSplit[0]) == 'xbl':
+        if str(newSplit[0]).lower() == 'xbl':
             enter = True
-        if str(newSplit[0]) == 'psn':
+        if str(newSplit[0]).lower() == 'psn':
             enter = True
-        if str(newSplit[0]) == 'origin':
+        if str(newSplit[0]).lower() == 'origin':
             enter = True
 
         print 'Enter Apex API hit session? ' + str(enter)
