@@ -5,3 +5,4 @@ test_process.py
 test_process.pyc
 --data
 __pycahce__
+__init__.py
