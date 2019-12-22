@@ -13,13 +13,12 @@ import mailer
 
 #setup
 #twitter validation
-#keys are in cfg.py
 auth = tweepy.OAuthHandler(cfg.consumer_key, cfg.consumer_secret)
 auth.set_access_token(cfg.access_token, cfg.access_token_secret)
 api = tweepy.API(auth)
 
 #apex API key
-headers = {'TRN-Api-Key': '3c0a15fd-ac7c-4f37-9f7a-47bd7a76286d',}
+headers = cfg.headers
 
 #setup credentials to access Twitter mentions via API
 consumer = oauth.Consumer(key=cfg.consumer_key, secret=cfg.consumer_secret)
@@ -110,7 +109,6 @@ def newProcess():
         print newSplit
 
         #apply platfrom and username
-
         if len(incomingTweet) >2 and len(newSplit) >= 2:
             platform = str(newSplit[0]).lower()
             print incomingTweet
