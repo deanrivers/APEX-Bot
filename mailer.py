@@ -10,11 +10,11 @@ def sendEmail():
     dateTime = x.strftime("%X")
     time_stamp = dateDay+' '+dateTime
 
-    sender = 'deanrivers2@gmail.com'
-    receiver = 'deanrivers2@gmail.com'
+    sender = ''
+    receiver = ''
 
     content = 'Your bot experienced an error at: '+time_stamp
-    password = 'Jogabonita!22'
+    password = ''
 
     msg = MIMEText(content)
 
