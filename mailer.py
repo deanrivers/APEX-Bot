@@ -2,6 +2,7 @@ import smtplib
 from getpass import getpass
 from email.mime.text import MIMEText
 import datetime
+import mailCreds
 
 def sendEmail():
 
@@ -10,11 +11,11 @@ def sendEmail():
     dateTime = x.strftime("%X")
     time_stamp = dateDay+' '+dateTime
 
-    sender = 'deanrivers2@gmail.com'
-    receiver = 'deanrivers2@gmail.com'
+    sender = mailCreds.sender
+    receiver = mailCreds.receiver
 
     content = 'Your bot experienced an error at: '+time_stamp
-    password = 'Jogabonita!22'
+    password = mailCreds.password
 
     msg = MIMEText(content)
 
